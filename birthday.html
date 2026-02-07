@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>生日快乐，宝贝！</title>
+    <style>
+        :root {
+            --mint-green: #e3fdf5;
+            --love-pink: #ff4d6d;
+            --text-color: #2eb872;
+        }
+
+        body, html {
+            margin: 0; padding: 0;
+            width: 100%; height: 100%;
+            overflow: hidden;
+            background: var(--mint-green);
+            font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: background 1s;
+        }
+
+        /* 鼠标轨迹粒子 */
+        canvas { position: fixed; top: 0; left: 0; pointer-events: none; z-index: 100; }
+
+        .card {
+            background: rgba(255, 255, 255, 0.85);
+            padding: 40px;
+            border-radius: 30px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.05);
+            text-align: center;
+            z-index: 10;
+            width: 450px;
+            border: 2px solid rgba(255, 255, 255, 0.9);
+        }
+
+        h1 { color: var(--text-color); font-size: 2.2em; margin-bottom: 20px; }
+        #typewriter { color: #555; line-height: 2; font-size: 1.1em; text-align: left; min-height: 140px; }
+        .highlight { color: var(--love-pink); font-weight: bold; }
+
+        /* 蛋糕样式 */
+        .cake-container { margin-top: 20px; cursor: pointer; transition: 0.3s; position: relative; }
+        .cake-container:hover { transform: scale(1.1); }
+        
+        .candle {
+            width: 8px; height: 30px;
+            background: #ffeb3b;
+            margin: 0 auto;
+            position: relative;
+            border-radius: 4px;
+        }
+        .flame {
+            width: 12px; height: 18px;
+            background: #ff9800;
+            border-radius: 50% 50% 20% 20%;
+            position: absolute;
+            top: -15px; left: -2px;
+            animation: flicker 0.6s infinite alternate;
+            box-shadow: 0 0 10px #ff9800;
+        }
+        @keyframes flicker {
+            from { transform: scale(1); opacity: 0.9; }
+            to { transform: scale(1.1) rotate(2deg); opacity: 1; }
+        }
+
+        .cake-body {
+            width: 100px; height: 60px;
+            background: #f48fb1;
+            margin: 0 auto;
+            border-radius: 10px 10px 0 0;
+            position: relative;
+            border-bottom: 5px solid #ad1457;
+        }
+        .cake-body::after {
+            content: ""; position: absolute;
+            width: 100%; height: 20px;
+            background: #f06292; top: 15px; left: 0;
+        }
+
+        /* 飘动的爱心 */
+        .heart {
+            position: absolute;
+            background-color: var(--love-pink);
+            transform: rotate(-45deg);
+            pointer-events: none; opacity: 0;
+            animation: rise 6s infinite linear;
+        }
+        .heart::before, .heart::after {
+            content: ""; background-color: inherit;
+            border-radius: 50%; position: absolute;
+            width: 100%; height: 100%;
+        }
+        .heart::before { top: -50%; left: 0; }
+        .heart::after { left: 50%; top: 0; }
+
+        @keyframes rise {
+            0% { transform: translateY(100vh) rotate(-45deg) scale(0.5); opacity: 0; }
+            50% { opacity: 0.6; }
+            100% { transform: translateY(-100px) rotate(-45deg) scale(1.2); opacity: 0; }
+        }
+    </style>
+</head>
+<body onmousedown="document.body.style.background='#ffdeeb'" onmouseup="document.body.style.background='#e3fdf5'">
+
+    <div class="card">
+        <h1>生日快乐，<span class="highlight">宝贝</span> ✨</h1>
+        <div id="typewriter"></div>
+        
+        <div class="cake-container" onclick="blowCandle()">
+            <div id="candle" class="candle"><div id="flame" class="flame"></div></div>
+            <div class="cake-body"></div>
+            <p style="color: #ad1457; font-size: 0.8em; margin-top: 5px;">点我许愿吹蜡烛 🎂</p>
+        </div>
+    </div>
+
+    <script>
+        // 1. 打字机
+        const text = "宝贝：\n遇见你是我生命中最美好的意外，还记得星期五吃晚餐时我说的缘分吗？\n愿你被世界温柔以待，愿你想要的都拥有。\n\n今天你是寿星，点一下蛋糕许愿吧！❤️";
+        let idx = 0;
+        function type() {
+            if (idx < text.length) {
+                document.getElementById("typewriter").innerHTML += text.charAt(idx);
+                idx++;
+                setTimeout(type, 110);
+            }
+        }
+        window.onload = type;
+
+        // 2. 吹蜡烛互动
+        function blowCandle() {
+            const flame = document.getElementById('flame');
+            if(flame.style.display !== 'none') {
+                flame.style.display = 'none'; // 熄灭火焰
+                alert("许愿成功！宝贝生日快乐！🎇");
+                burstConfetti(); // 爆发纸屑
+            }
+        }
+
+        // 3. 背景爱心
+        setInterval(() => {
+            const heart = document.createElement('div');
+            heart.className = 'heart';
+            const size = Math.random() * 15 + 10 + 'px';
+            heart.style.width = size; heart.style.height = size;
+            heart.style.left = Math.random() * 100 + 'vw';
+            heart.style.animationDuration = Math.random() * 3 + 4 + 's';
+            heart.style.backgroundColor = `hsl(${Math.random() * 20 + 340}, 80%, 70%)`;
+            document.body.appendChild(heart);
+            setTimeout(() => heart.remove(), 6000);
+        }, 450);
+
+        // 4. 满屏彩带爆发效果
+        function burstConfetti() {
+            for (let i = 0; i < 50; i++) {
+                const conf = document.createElement('div');
+                conf.style.position = 'absolute';
+                conf.style.width = '10px';
+                conf.style.height = '10px';
+                conf.style.backgroundColor = `hsl(${Math.random() * 360}, 100%, 50%)`;
+                conf.style.left = '50%';
+                conf.style.top = '60%';
+                document.body.appendChild(conf);
+
+                const angle = Math.random() * Math.PI * 2;
+                const velocity = Math.random() * 15 + 5;
+                let x = 0, y = 0;
+                let opacity = 1;
+
+                const timer = setInterval(() => {
+                    x += Math.cos(angle) * velocity;
+                    y += Math.sin(angle) * velocity + 2; // 重力感
+                    opacity -= 0.02;
+                    conf.style.transform = `translate(${x}px, ${y}px) rotate(${x}deg)`;
+                    conf.style.opacity = opacity;
+                    if(opacity <= 0) {
+                        clearInterval(timer);
+                        conf.remove();
+                    }
+                }, 20);
+            }
+        }
+
+        // 5. 鼠标跟随粒子
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        document.body.appendChild(canvas);
+        canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+        let dots = [];
+        document.onmousemove = (e) => {
+            for(let i=0; i<3; i++) dots.push({x:e.clientX, y:e.clientY, s:Math.random()*4+1, vx:(Math.random()-0.5)*2, vy:(Math.random()-0.5)*2, o:1});
+        };
+        function anim() {
+            ctx.clearRect(0,0,canvas.width,canvas.height);
+            dots.forEach((d, i) => {
+                d.x+=d.vx; d.y+=d.vy; d.o-=0.02;
+                ctx.fillStyle = `rgba(255,77,109,${d.o})`;
+                ctx.beginPath(); ctx.arc(d.x, d.y, d.s, 0, 7); ctx.fill();
+                if(d.o<=0) dots.splice(i,1);
+            });
+            requestAnimationFrame(anim);
+        }
+        anim();
+    </script>
+</body>
+</html>
